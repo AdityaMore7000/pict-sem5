@@ -2,6 +2,7 @@
 using namespace std;
 class Job {
   int wt, at, bt, ct, tat, id;
+  bool exec;
   string name;
 
 public:
@@ -12,16 +13,17 @@ public:
 Job::Job() {
   this->wt = this->at = this->bt = this->ct = this->tat = 0;
   this->id = -1;
+  this->exec = 0;
   this->name = "";
 }
 class JobScheduler {
   Job *rq;
   int np;
-  int averageWaitingTime, totalExecutionTime, totalWaitingTime,totalBurstTime;
+  int averageWaitingTime, totalExecutionTime, totalWaitingTime, totalBurstTime;
 
 public:
   JobScheduler(int);
-  void sort();
+  void sortByArrival();
   void show();
   void FCFS();
   void SJF();
@@ -29,8 +31,8 @@ public:
   void RR();
 };
 JobScheduler::JobScheduler(int np) {
-  this->averageWaitingTime = this->totalExecutionTime = this->totalWaitingTime = this->totalBurstTime=
-      0;
+  this->averageWaitingTime = this->totalExecutionTime = this->totalWaitingTime =
+      this->totalBurstTime = 0;
   this->np = np;
   rq = new Job[np];
   for (int i = 0; i < np; i++) {
@@ -45,31 +47,34 @@ JobScheduler::JobScheduler(int np) {
     cin >> rq[i].bt;
     this->totalBurstTime += rq[i].bt;
   }
-  sort();
+  sortByArrival();
 }
 void JobScheduler::FCFS() {
   for (int i = 0; i < np; i++) {
-    totalExecutionTime +=rq[i].bt;
-     rq[i].ct = totalExecutionTime;
-    rq[i].tat = rq[i].ct-rq[i].at;
+    totalExecutionTime += rq[i].bt;
+    rq[i].ct = totalExecutionTime;
+    rq[i].tat = rq[i].ct - rq[i].at;
     rq[i].wt = rq[i].tat - rq[i].bt;
-    this->totalWaitingTime +=rq[i].wt;
+    this->totalWaitingTime += rq[i].wt;
   }
 }
-void JobScheduler::PBS(){
-  cout<<"PBS\n";
+void JobScheduler::PBS() {
+  cout << "PBS\n";
   return;
 }
-void JobScheduler::SJF(){
-  int time = 0;
-  sort();
+void JobScheduler::SJF() {
+  int time = rq[0].at;
+  Job *ready = new Job[np];
+  for(int i = 0;i<np;i++){
+    this->totalExecutionTime +=rq[i].bt;
+  }
   return;
 }
-void JobScheduler::RR(){
-  cout<<"RR\n";
+void JobScheduler::RR() {
+  cout << "RR\n";
   return;
 }
-void JobScheduler::sort() {
+void JobScheduler::sortByArrival() {
   for (int i = 0; i < np - 1; i++) {
     int min = i;
     for (int j = i + 1; j < np; j++) {
@@ -81,8 +86,8 @@ void JobScheduler::sort() {
   }
 }
 void JobScheduler::show() {
+    cout << "Processes: "<< "\n\n";
   for (int i = 0; i < np; i++) {
-    cout << "Process: " << i + 1 << "\n\n";
     cout << "ID: " << rq[i].id << '\t';
     cout << "Name: " << rq[i].name << '\t';
     cout << "AT: " << rq[i].at << '\t';
@@ -90,10 +95,12 @@ void JobScheduler::show() {
     cout << "CT: " << rq[i].ct << '\t';
     cout << "TAT: " << rq[i].tat << '\t';
     cout << "WT: " << rq[i].wt << '\t';
-    float f;
-    f = float(this->totalWaitingTime)/np;
-    cout << '\n';
   }
+    float f;
+    f = float(this->totalWaitingTime) / np;
+    cout<<this->totalExecutionTime<<'\n';
+    cout<<f<<'\n';
+    cout << '\n';
 }
 
 int main() {
@@ -116,14 +123,17 @@ int main() {
   }
   case 2: {
     js.SJF();
+    js.show();
     break;
   }
   case 3: {
     js.PBS();
+    js.show();
     break;
   }
   case 4: {
     js.RR();
+    js.show();
     break;
   }
   }
