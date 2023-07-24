@@ -1,4 +1,4 @@
-#include <iostream>
+#include <bits/stdc++.h>
 using namespace std;
 class Job {
   int wt, at, bt, ct, tat, id;
@@ -17,16 +17,20 @@ Job::Job() {
 class JobScheduler {
   Job *rq;
   int np;
-  int averageWaitingTime, totalExecutionTime;
+  int averageWaitingTime, totalExecutionTime, totalWaitingTime,totalBurstTime;
 
 public:
   JobScheduler(int);
   void sort();
   void show();
-void FCFS();
+  void FCFS();
+  void SJF();
+  void PBS();
+  void RR();
 };
 JobScheduler::JobScheduler(int np) {
-  this->averageWaitingTime = this->totalExecutionTime = 0;
+  this->averageWaitingTime = this->totalExecutionTime = this->totalWaitingTime = this->totalBurstTime=
+      0;
   this->np = np;
   rq = new Job[np];
   for (int i = 0; i < np; i++) {
@@ -39,18 +43,31 @@ JobScheduler::JobScheduler(int np) {
     cin >> rq[i].at;
     cout << "Enter burst time:\n";
     cin >> rq[i].bt;
-    
+    this->totalBurstTime += rq[i].bt;
   }
   sort();
-  FCFS();
 }
-void JobScheduler::FCFS(){
-  for(int i = 0;i<np;i++){ 
-  rq[i].wt = totalExecutionTime - rq[i].at;
-    this->totalExecutionTime += rq[i].bt;
-    rq[i].ct = this->totalExecutionTime;
-    rq[i].tat = rq[i].ct - rq[i].at;
+void JobScheduler::FCFS() {
+  for (int i = 0; i < np; i++) {
+    totalExecutionTime +=rq[i].bt;
+     rq[i].ct = totalExecutionTime;
+    rq[i].tat = rq[i].ct-rq[i].at;
+    rq[i].wt = rq[i].tat - rq[i].bt;
+    this->totalWaitingTime +=rq[i].wt;
   }
+}
+void JobScheduler::PBS(){
+  cout<<"PBS\n";
+  return;
+}
+void JobScheduler::SJF(){
+  int time = 0;
+  sort();
+  return;
+}
+void JobScheduler::RR(){
+  cout<<"RR\n";
+  return;
 }
 void JobScheduler::sort() {
   for (int i = 0; i < np - 1; i++) {
@@ -59,27 +76,56 @@ void JobScheduler::sort() {
       if (rq[j].at < rq[min].at)
         min = j;
     }
-      if (min != i)
-        swap(rq[min], rq[i]);
+    if (min != i)
+      swap(rq[min], rq[i]);
   }
 }
 void JobScheduler::show() {
   for (int i = 0; i < np; i++) {
     cout << "Process: " << i + 1 << "\n\n";
-    cout <<"ID: "<< rq[i].id << '\t';
-    cout <<"Name: "<< rq[i].name << '\t';
-    cout <<"AT: "<< rq[i].at << '\t';
-    cout <<"BT: "<< rq[i].bt << '\t';
-    cout <<"CT: "<< rq[i].ct << '\t';
-    cout <<"TAT: "<< rq[i].tat << '\t';
-    cout <<"WT: "<< rq[i].wt << '\t';
-    cout<<'\n';
+    cout << "ID: " << rq[i].id << '\t';
+    cout << "Name: " << rq[i].name << '\t';
+    cout << "AT: " << rq[i].at << '\t';
+    cout << "BT: " << rq[i].bt << '\t';
+    cout << "CT: " << rq[i].ct << '\t';
+    cout << "TAT: " << rq[i].tat << '\t';
+    cout << "WT: " << rq[i].wt << '\t';
+    float f;
+    f = float(this->totalWaitingTime)/np;
+    cout << '\n';
   }
 }
 
 int main() {
-  cout << "Hello world\n";
-  JobScheduler js(5);
-  js.show();
+  int choice;
+  cout << "Enter number of jobs:\n";
+  int n;
+  cin >> n;
+  JobScheduler js(n);
+  cout << "Press 1 for First come first serve(non-preemptive)\n";
+  cout << "Press 2 for Shortest Job First(non-preemptive)\n";
+  cout << "Press 3 for Priority based Scheduling(non-preemptive)\n";
+  cout << "Press 4 for Round Robin(preemptive)\n";
+  cout << "Enter choice:\n";
+  cin >> choice;
+  switch (choice) {
+  case 1: {
+    js.FCFS();
+    js.show();
+    break;
+  }
+  case 2: {
+    js.SJF();
+    break;
+  }
+  case 3: {
+    js.PBS();
+    break;
+  }
+  case 4: {
+    js.RR();
+    break;
+  }
+  }
   return 0;
 }
