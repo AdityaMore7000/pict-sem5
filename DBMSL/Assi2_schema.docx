@@ -1,0 +1,50 @@
+Assignment No 2A  (Employee Schema)
+Create following tables in MYSQL  
+
+    • Employee( Emp_id, Dept_id, Emp_fname, Emp_lname, Emp_Position,    
+                  Emp_salary,Emp_JoinDate)
+    • Dept ( Dept_id, Dept_name,Dept_location ,)
+    • Project( Proj_id,Dept_id ,Proj_Name,Proj_Location,Proj_cost,Proj_year)
+ Create view (simple), index, sequence and synonym based on above tables.
+Note: Use referential integrity constraints while creating tables with on delete cascade options.   
+Assignment No 2A 
+Use the tables created in assignment no 2 and execute the following queries:  
+1. Insert at least 10 records in the Employee table and insert other tables accordingly.
+2. Display all Employee details with Department ‘Computer’ and ‘IT’ and Employee
+    first name starting with  'p' or 'h'.
+ 
+3. lists the number of different Employee Positions.  
+4. Give 10% increase in Salary of the Employee whose Birthdate before 1985.  
+5. Delete Department details which location is ‘Mumbai’.  
+6. Find the names of Projects with location ‘pune’  .  
+7. Find the project having cost in between 100000 to 500000. 
+8. Find the project having maximum price and find average of Project cost
+9. Display all employees with Emp _id  and Emp name in decreasing order of
+     Emp_lname
+10. Display Proj_name,Proj_location ,Proj_cost of all project started in 2004,2005,2007   
+  
+OR 
+Assignment No 2A  (Student Schema)
+Consider the following relational Schema.  
+    •  Student( s_id,Drive_id,T_id,s_name,CGPA,s_branch,S_dob)
+    •  PlacementDrive( Drive_id,Pcompany_name,package,location)
+    •  Training ( T_id,Tcompany_name,T_Fee,T_year) 
+Note: Use referential integrity constraints while creating tables with on delete cascade options. 
+ Create view(simple), index, sequence and synonym based on above tables.  
+Assignment No 2B  
+Use the tables created in assignment no 2 and execute the following queries:  
+1. Insert at least 10 records in the Student  table and insert other tables accordingly.
+2. Display all students details with branch ‘Computer ‘and ‘It’ and student name
+    starting with  'a' or 'd'.  
+3. list the number of different companies.(use of distinct)  
+4. Give 15% increase in fee of the Training  whose joining year is 2019.
+5. Delete Student details having CGPA score less than 7.  
+6. Find the names of companies belonging to pune or Mumbai  
+7. Find the student name who joined training in  1-1-2019 as well as in 1-1-2021  
+8. Find the student name  having maximum CGPA score and names of students  having CGPA score between  7 to 9 .
+9. Display all Student  name with T_id  with decreasing order of Fees
+10. Display PCompany name, S_name ,location and Package with Package  30K, 40K and 50k 
+A2: Guidelines  
+    • Synonyms not supported in MySQL. Required to include example from oracle in write-up or we can use Alice name for table name in query.  
+    • Sequence should be implemented with AUTO_INCREMENT. Concept of sequence from oracle must be included in the write-up.  
+    • Simple view, Index (simple, unique, composite and text – show index after creation) 
