@@ -1,141 +1,164 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <algorithm>
 using namespace std;
+
 class Job {
-  int wt, at, bt, ct, tat, id;
-  bool exec;
-  string name;
-
 public:
-  Job();
-  void setData();
-  friend class JobScheduler;
-};
-Job::Job() {
-  this->wt = this->at = this->bt = this->ct = this->tat = 0;
-  this->id = -1;
-  this->exec = 0;
-  this->name = "";
-}
-class JobScheduler {
-  Job *rq;
-  int np;
-  int averageWaitingTime, totalExecutionTime, totalWaitingTime, totalBurstTime;
+    int job_id;
+    int arrival_time;
+    int burst_time;
+    int remaining_time;
+    int priority;
 
-public:
-  JobScheduler(int);
-  void sortByArrival();
-  void show();
-  void FCFS();
-  void SJF();
-  void PBS();
-  void RR();
-};
-JobScheduler::JobScheduler(int np) {
-  this->averageWaitingTime = this->totalExecutionTime = this->totalWaitingTime =
-      this->totalBurstTime = 0;
-  this->np = np;
-  rq = new Job[np];
-  for (int i = 0; i < np; i++) {
-    cout << "Enter for job" << (i + 1) << '\n';
-    cout << "Enter name:\n";
-    cin >> rq[i].name;
-    cout << "Enter ID:\n";
-    cin >> rq[i].id;
-    cout << "Enter arrival time:\n";
-    cin >> rq[i].at;
-    cout << "Enter burst time:\n";
-    cin >> rq[i].bt;
-    this->totalBurstTime += rq[i].bt;
-  }
-  sortByArrival();
-}
-void JobScheduler::FCFS() {
-  for (int i = 0; i < np; i++) {
-    totalExecutionTime += rq[i].bt;
-    rq[i].ct = totalExecutionTime;
-    rq[i].tat = rq[i].ct - rq[i].at;
-    rq[i].wt = rq[i].tat - rq[i].bt;
-    this->totalWaitingTime += rq[i].wt;
-  }
-}
-void JobScheduler::PBS() {
-  cout << "PBS\n";
-  return;
-}
-void JobScheduler::SJF() {
-  int time = rq[0].at;
-  Job *ready = new Job[np];
-  for(int i = 0;i<np;i++){
-    this->totalExecutionTime +=rq[i].bt;
-  }
-  return;
-}
-void JobScheduler::RR() {
-  cout << "RR\n";
-  return;
-}
-void JobScheduler::sortByArrival() {
-  for (int i = 0; i < np - 1; i++) {
-    int min = i;
-    for (int j = i + 1; j < np; j++) {
-      if (rq[j].at < rq[min].at)
-        min = j;
+    Job(int job_id, int arrival_time, int burst_time, int priority)
+        : job_id(job_id), arrival_time(arrival_time), burst_time(burst_time),
+          remaining_time(burst_time), priority(priority) {}
+
+    friend ostream& operator<<(ostream& os, const Job& job) {
+        os << "Job " << job.job_id << ": Arrival Time=" << job.arrival_time
+           << ", Burst Time=" << job.burst_time << ", Priority=" << job.priority;
+        return os;
     }
-    if (min != i)
-      swap(rq[min], rq[i]);
-  }
-}
-void JobScheduler::show() {
-    cout << "Processes: "<< "\n\n";
-  for (int i = 0; i < np; i++) {
-    cout << "ID: " << rq[i].id << '\t';
-    cout << "Name: " << rq[i].name << '\t';
-    cout << "AT: " << rq[i].at << '\t';
-    cout << "BT: " << rq[i].bt << '\t';
-    cout << "CT: " << rq[i].ct << '\t';
-    cout << "TAT: " << rq[i].tat << '\t';
-    cout << "WT: " << rq[i].wt << '\t';
-  }
-    float f;
-    f = float(this->totalWaitingTime) / np;
-    cout<<this->totalExecutionTime<<'\n';
-    cout<<f<<'\n';
-    cout << '\n';
-}
+};
+
+class Scheduler {
+public:
+    vector<Job> queue;
+    int time;
+    float avg_waiting_time;
+    int total_burst_time;
+
+    Scheduler() : time(0), avg_waiting_time(0), total_burst_time(0) {}
+
+    void add_job(const Job& job) {
+        queue.push_back(job);
+    }
+
+    void fcfs() {
+        sort(queue.begin(), queue.end(), [](const Job& a, const Job& b) {
+            return a.arrival_time < b.arrival_time;
+        });
+
+        int total_waiting_time = 0;
+        for (const auto& job : queue) {
+            total_waiting_time += time - job.arrival_time;
+            execute_job(job);
+        }
+        avg_waiting_time = static_cast<float>(total_waiting_time) / queue.size();
+        calculate_total_burst_time();
+    }
+
+    void sjf_preemptive() {
+        vector<Job> temp_queue = queue;
+        sort(temp_queue.begin(), temp_queue.end(), [](const Job& a, const Job& b) {
+            return a.arrival_time < b.arrival_time;
+        });
+
+        int total_waiting_time = 0;
+        while (!temp_queue.empty()) {
+            Job job = temp_queue.front();
+            temp_queue.erase(temp_queue.begin());
+            int waiting_time = time - job.arrival_time;
+            total_waiting_time += waiting_time;
+            execute_job(job);
+        }
+        avg_waiting_time = static_cast<float>(total_waiting_time) / queue.size();
+        calculate_total_burst_time();
+    }
+
+    void priority_non_preemptive() {
+        sort(queue.begin(), queue.end(), [](const Job& a, const Job& b) {
+            return a.arrival_time < b.arrival_time;
+        });
+
+        int total_waiting_time = 0;
+        for (const auto& job : queue) {
+            total_waiting_time += time - job.arrival_time;
+            execute_job(job);
+        }
+        avg_waiting_time = static_cast<float>(total_waiting_time) / queue.size();
+        calculate_total_burst_time();
+    }
+
+    void round_robin_preemptive(int time_slice) {
+        vector<Job> temp_queue = queue;
+        int total_waiting_time = 0;
+
+        while (!temp_queue.empty()) {
+            Job job = temp_queue.front();
+            temp_queue.erase(temp_queue.begin());
+            int waiting_time = time - job.arrival_time;
+            total_waiting_time += waiting_time;
+            int time_executed = min(time_slice, job.remaining_time);
+            job.remaining_time -= time_executed;
+            time += time_executed;
+
+            if (job.remaining_time > 0) {
+                temp_queue.push_back(job);
+            } else {
+                print_job_completion(job);
+            }
+        }
+
+        int num_completed_jobs = queue.size() - temp_queue.size();
+        avg_waiting_time = static_cast<float>(total_waiting_time) / (num_completed_jobs > 0 ? num_completed_jobs : 1);
+        calculate_total_burst_time();
+    }
+
+    void execute_job(const Job& job) {
+        time = max(time, job.arrival_time);
+        print_job_execution(job);
+        time += job.burst_time;
+    }
+
+    void print_job_execution(const Job& job) {
+        cout << "Time=" << time << ", Executing " << job << endl;
+    }
+
+    void print_job_completion(const Job& job) {
+        cout << "Time=" << time << ", Job " << job.job_id << " completed!" << endl;
+    }
+
+    void calculate_total_burst_time() {
+        total_burst_time = 0;
+        for (const auto& job : queue) {
+            total_burst_time += job.burst_time;
+        }
+    }
+};
 
 int main() {
-  int choice;
-  cout << "Enter number of jobs:\n";
-  int n;
-  cin >> n;
-  JobScheduler js(n);
-  cout << "Press 1 for First come first serve(non-preemptive)\n";
-  cout << "Press 2 for Shortest Job First(non-preemptive)\n";
-  cout << "Press 3 for Priority based Scheduling(non-preemptive)\n";
-  cout << "Press 4 for Round Robin(preemptive)\n";
-  cout << "Enter choice:\n";
-  cin >> choice;
-  switch (choice) {
-  case 1: {
-    js.FCFS();
-    js.show();
-    break;
-  }
-  case 2: {
-    js.SJF();
-    js.show();
-    break;
-  }
-  case 3: {
-    js.PBS();
-    js.show();
-    break;
-  }
-  case 4: {
-    js.RR();
-    js.show();
-    break;
-  }
-  }
-  return 0;
+    Job job1(1, 0, 8, 2);
+    Job job2(2, 1, 4, 1);
+    Job job3(3, 2, 9, 3);
+    Job job4(4, 3, 5, 4);
+
+    Scheduler scheduler;
+    scheduler.add_job(job1);
+    scheduler.add_job(job2);
+    scheduler.add_job(job3);
+    scheduler.add_job(job4);
+
+    cout << "FCFS:" << endl;
+    scheduler.fcfs();
+    cout << "Average Waiting Time: " << scheduler.avg_waiting_time << endl;
+    cout << "Total Burst Time: " << scheduler.total_burst_time << endl;
+
+    cout << "\nSJF Preemptive:" << endl;
+    scheduler.sjf_preemptive();
+    cout << "Average Waiting Time: " << scheduler.avg_waiting_time << endl;
+    cout << "Total Burst Time: " << scheduler.total_burst_time << endl;
+
+    cout << "\nPriority Non-Preemptive:" << endl;
+    scheduler.priority_non_preemptive();
+    cout << "Average Waiting Time: " << scheduler.avg_waiting_time << endl;
+    cout << "Total Burst Time: " << scheduler.total_burst_time << endl;
+
+    cout << "\nRound Robin Preemptive:" << endl;
+    scheduler.round_robin_preemptive(3);
+    cout << "Average Waiting Time: " << scheduler.avg_waiting_time << endl;
+    cout << "Total Burst Time: " << scheduler.total_burst_time << endl;
+
+    return 0;
 }
