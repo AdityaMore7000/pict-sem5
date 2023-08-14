@@ -1,2 +1,2 @@
-# pict-sem5
-for assignments of 5th semester laboratories
+# PICT SEM-V
+For assignments of SPPU 5th Semester Laboratories
