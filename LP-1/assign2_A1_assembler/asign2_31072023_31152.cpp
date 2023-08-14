@@ -7,7 +7,6 @@ using namespace std;
 class pass1{
 public:
 void execute(){
-cout << "At line 1\n";
    map<string, pair<string, string>> opcode;
 
    opcode["STOP"] = {"IS", "00"};
@@ -277,8 +276,6 @@ cout << "At line 1\n";
    }
 
    pout.close();
-
-   cout << "\nProgram Excuted!!" << endl;
 }
 void output_show(){
 ifstream fout;
