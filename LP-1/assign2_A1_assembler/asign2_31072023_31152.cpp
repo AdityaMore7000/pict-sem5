@@ -1,3 +1,7 @@
+/*
+Author: AdityaMore7000
+*/
+
 #include <bits/stdc++.h>
 using namespace std;
 class pass1{
