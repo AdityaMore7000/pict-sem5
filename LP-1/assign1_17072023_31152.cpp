@@ -1,164 +1,321 @@
-#include <iostream>
-#include <vector>
-#include <algorithm>
+#include <bits/stdc++.h>
 using namespace std;
-
-class Job {
+class pass1{
 public:
-    int job_id;
-    int arrival_time;
-    int burst_time;
-    int remaining_time;
-    int priority;
+void execute(){
+cout << "At line 1\n";
+   map<string, pair<string, string>> opcode;
 
-    Job(int job_id, int arrival_time, int burst_time, int priority)
-        : job_id(job_id), arrival_time(arrival_time), burst_time(burst_time),
-          remaining_time(burst_time), priority(priority) {}
+   opcode["STOP"] = {"IS", "00"};
+   opcode["ADD"] = {"IS", "01"};
+   opcode["SUB"] = {"IS", "02"};
+   opcode["MULT"] = {"IS", "03"};
+   opcode["MOVER"] = {"IS", "04"};
+   opcode["MOVEM"] = {"IS", "05"};
+   opcode["COMP"] = {"IS", "06"};
+   opcode["BC"] = {"IS", "07"};
+   opcode["DIV"] = {"IS", "08"};
+   opcode["READ"] = {"IS", "09"};
+   opcode["PRINT"] = {"IS", "10"};
+   opcode["START"] = {"AD", "01"};
+   opcode["END"] = {"AD", "02"};
+   opcode["ORIGIN"] = {"AD", "03"};
+   opcode["EQU"] = {"AD", "04"};
+   opcode["LTORG"] = {"AD", "05"};
+   opcode["DC"] = {"DL", "01"};
+   opcode["DS"] = {"DL", "02"};
 
-    friend ostream& operator<<(ostream& os, const Job& job) {
-        os << "Job " << job.job_id << ": Arrival Time=" << job.arrival_time
-           << ", Burst Time=" << job.burst_time << ", Priority=" << job.priority;
-        return os;
-    }
+   opcode["AREG"] = {"1", ""};
+   opcode["BREG"] = {"2", ""};
+   opcode["CREG"] = {"3", ""};
+   opcode["DREG"] = {"4", ""};
+
+   opcode["LT"] = {"1", ""};
+   opcode["LE"] = {"2", ""};
+   opcode["EQ"] = {"3", ""};
+   opcode["GT"] = {"4", ""};
+   opcode["GE"] = {"5", ""};
+   opcode["ANY"] = {"6", ""};
+
+   ifstream fin;
+   fin.open("input.txt");
+
+   ofstream fout;
+   fout.open("output.txt");
+
+   string line, word;
+   map<string, pair<int, string>> symtab;
+   vector<pair<string, int>> littab;
+   vector<string> pooltab;
+
+   int litindex = 0;
+   int lc = -1;
+   while (getline(fin, line))
+   {
+       stringstream st(line);
+       st >> word;
+       string label = "";
+
+       if (opcode.count(word) == 0)
+       {
+           if (symtab.count(word) == 0)
+           {
+               symtab[word] = {lc, to_string(symtab.size() + 1)};
+           }
+           else
+           {
+               symtab[word].first = lc;
+           }
+           label = word;
+           st >> word;
+       }
+
+       string operation = word;
+       if (operation == "START")
+       {
+           fout << "    ";
+           fout << "(" << opcode[word].first << ", " << opcode[word].second << ") ";
+
+           st >> word;
+           fout << "(C, " << word << ") ";
+           lc = stoi(word);
+       }
+       else if (operation == "END")
+       {
+           fout << "    ";
+           fout << "(" << opcode[word].first << ", " << opcode[word].second << ") ";
+           fout << endl;
+           pooltab.push_back("#" + to_string(litindex + 1));
+           for (; litindex < littab.size(); litindex++)
+           {
+               fout << lc << " ";
+               fout << "( " << opcode["DC"].first << ", " << opcode["DC"].second << ") ";
+               littab[litindex].second = lc;
+               string literal = littab[litindex].first;
+               string sublit = literal.substr(2, literal.length() - 3);
+               fout << "( C, " << sublit << ") ";
+               fout << endl;
+               lc++;
+           }
+       }
+       else if (operation == "LTORG")
+       {
+           fout << "    ";
+           fout << "( " << opcode[word].first << ", " << opcode[word].second << ") ";
+           fout << endl;
+           pooltab.push_back("#" + to_string(litindex + 1));
+           for (; litindex < littab.size(); litindex++)
+           {
+               fout << lc << " ";
+               fout << "( " << opcode["DC"].first << ", " << opcode["DC"].second << ") ";
+               littab[litindex].second = lc;
+               string literal = littab[litindex].first;
+               string sublit = literal.substr(2, literal.size() - 3);
+               fout << "(C, " << sublit << ") ";
+               fout << endl;
+               lc++;
+           }
+       }
+       else if (operation == "EQU")
+       {
+           fout << "    ";
+           fout << "No IC generated";
+           fout << endl;
+           st >> word;
+           int plusminusindex = 0;
+           for (int i = 0; i < word.length(); i++)
+           {
+               /* code */
+               if (word[i] == '+' || word[i] == '-')
+               {
+                   plusminusindex = i;
+                   break;
+               }
+           }
+           char plusminus = '0';
+           string aftersign;
+           string beforesign;
+           if (plusminusindex != 0)
+           {
+               plusminus = word[plusminusindex];
+               aftersign = word.substr(plusminusindex + 1);
+               beforesign = word.substr(0, plusminusindex);
+           }
+           else
+           {
+               beforesign = word.substr(0, word.length());
+           }
+           symtab[label].first = symtab[beforesign].first;
+
+           if (plusminus == '+')
+           {
+               symtab[label].first += stoi(aftersign);
+           }
+           else
+           {
+               symtab[label].first -= stoi(aftersign);
+           }
+       }
+       else if (operation == "ORIGIN")
+       {
+           fout << "    ";
+           fout << "(" << opcode[word].first << ", " << opcode[word].second << ") ";
+           // fout << endl;
+           st >> word;
+           int plusminusindex = 0;
+           for (int i = 0; i < word.length(); i++)
+           {
+               if (word[i] == '+' || word[i] == '-')
+               {
+                   plusminusindex = i;
+                   break;
+               }
+           }
+           char plusminus = '0';
+           string beforesign, aftersign;
+           if (plusminusindex != 0)
+           {
+               plusminus = word[plusminusindex];
+               aftersign = word.substr(plusminusindex + 1);
+               beforesign = word.substr(0, plusminusindex);
+           }
+           else
+           {
+               beforesign = word.substr(0, word.length());
+           }
+           lc = symtab[beforesign].first;
+           fout << "(S , " << symtab[beforesign].second << ")";
+
+           if (plusminus == '+')
+           {
+               lc += stoi(aftersign);
+               fout << "+" << aftersign << "\n";
+           }
+           else if (plusminus == '-')
+           {
+               lc -= stoi(aftersign);
+               fout << "-" << aftersign << "\n";
+           }
+       }
+       else
+       {
+           fout << lc << " ";
+           fout << "(" << opcode[word].first << ", " << opcode[word].second << ") ";
+
+           while (st >> word)
+           {
+               if (operation == "DC")
+               {
+                   word = word.substr(1, word.length() - 2);
+                   fout << "(C, " << word << ") ";
+                   // symtab[label].first = lc;
+               }
+               else if (operation == "DS")
+               {
+                   fout << "(C, " << word << ") ";
+                   // symtab[label].first = lc;
+                   // lc += stoi(word) - 1;
+               }
+               else if (word[0] == '=')
+               {
+                   littab.push_back({word, lc});
+                   fout << "(L, " << littab.size() << ") ";
+               }
+               else if (opcode.count(word) > 0)
+               {
+                   fout << "(" << opcode[word].first << ") ";
+               }
+               else
+               {
+                   if (symtab.count(word) == 0)
+                   {
+                       symtab[word] = {lc, to_string(symtab.size() + 1)};
+                   }
+                   fout << "(S, " << symtab[word].second << ") ";
+               }
+           }
+           lc++;
+       }
+       fout << endl;
+   }
+   fin.close();
+   fout.close();
+
+   ofstream sout;
+   sout.open("symbol_table.txt"); // writing to symbol table file
+
+   for (auto i : symtab)
+   {
+       sout << i.second.second << " " << i.first << " " << i.second.first;
+       sout << endl;
+   }
+
+   sout.close();
+
+   ofstream lout;
+   lout.open("literal_table.txt"); // writing to literal table file
+
+   for (auto i : littab)
+   {
+       lout << i.first << " " << i.second;
+       lout << endl;
+   }
+
+   lout.close();
+
+   ofstream pout;
+   pout.open("pool_table.txt"); // writing to pool table file
+
+   for (auto i : pooltab)
+   {
+       pout << i;
+       pout << endl;
+   }
+
+   pout.close();
+
+   cout << "\nProgram Excuted!!" << endl;
+}
+void output_show(){
+ifstream fout;
+fout.open("output.txt",ios::in);
+while(!fout.eof()){
+string str;
+getline(fout,str);
+cout<<str<<"\n";
+}
+fout.close();
+}
+void symbol_show(){
+ifstream fout;
+fout.open("symbol_table.txt",ios::in);
+while(!fout.eof()){
+string str;
+getline(fout,str);
+cout<<str<<"\n";
+}
+fout.close();
+}
+void lit_show(){
+ifstream fout;
+fout.open("literal_table.txt",ios::in);
+while(!fout.eof()){
+string str;
+getline(fout,str);
+cout<<str<<"\n";
+}
+fout.close();
+}
 };
-
-class Scheduler {
-public:
-    vector<Job> queue;
-    int time;
-    float avg_waiting_time;
-    int total_burst_time;
-
-    Scheduler() : time(0), avg_waiting_time(0), total_burst_time(0) {}
-
-    void add_job(const Job& job) {
-        queue.push_back(job);
-    }
-
-    void fcfs() {
-        sort(queue.begin(), queue.end(), [](const Job& a, const Job& b) {
-            return a.arrival_time < b.arrival_time;
-        });
-
-        int total_waiting_time = 0;
-        for (const auto& job : queue) {
-            total_waiting_time += time - job.arrival_time;
-            execute_job(job);
-        }
-        avg_waiting_time = static_cast<float>(total_waiting_time) / queue.size();
-        calculate_total_burst_time();
-    }
-
-    void sjf_preemptive() {
-        vector<Job> temp_queue = queue;
-        sort(temp_queue.begin(), temp_queue.end(), [](const Job& a, const Job& b) {
-            return a.arrival_time < b.arrival_time;
-        });
-
-        int total_waiting_time = 0;
-        while (!temp_queue.empty()) {
-            Job job = temp_queue.front();
-            temp_queue.erase(temp_queue.begin());
-            int waiting_time = time - job.arrival_time;
-            total_waiting_time += waiting_time;
-            execute_job(job);
-        }
-        avg_waiting_time = static_cast<float>(total_waiting_time) / queue.size();
-        calculate_total_burst_time();
-    }
-
-    void priority_non_preemptive() {
-        sort(queue.begin(), queue.end(), [](const Job& a, const Job& b) {
-            return a.arrival_time < b.arrival_time;
-        });
-
-        int total_waiting_time = 0;
-        for (const auto& job : queue) {
-            total_waiting_time += time - job.arrival_time;
-            execute_job(job);
-        }
-        avg_waiting_time = static_cast<float>(total_waiting_time) / queue.size();
-        calculate_total_burst_time();
-    }
-
-    void round_robin_preemptive(int time_slice) {
-        vector<Job> temp_queue = queue;
-        int total_waiting_time = 0;
-
-        while (!temp_queue.empty()) {
-            Job job = temp_queue.front();
-            temp_queue.erase(temp_queue.begin());
-            int waiting_time = time - job.arrival_time;
-            total_waiting_time += waiting_time;
-            int time_executed = min(time_slice, job.remaining_time);
-            job.remaining_time -= time_executed;
-            time += time_executed;
-
-            if (job.remaining_time > 0) {
-                temp_queue.push_back(job);
-            } else {
-                print_job_completion(job);
-            }
-        }
-
-        int num_completed_jobs = queue.size() - temp_queue.size();
-        avg_waiting_time = static_cast<float>(total_waiting_time) / (num_completed_jobs > 0 ? num_completed_jobs : 1);
-        calculate_total_burst_time();
-    }
-
-    void execute_job(const Job& job) {
-        time = max(time, job.arrival_time);
-        print_job_execution(job);
-        time += job.burst_time;
-    }
-
-    void print_job_execution(const Job& job) {
-        cout << "Time=" << time << ", Executing " << job << endl;
-    }
-
-    void print_job_completion(const Job& job) {
-        cout << "Time=" << time << ", Job " << job.job_id << " completed!" << endl;
-    }
-
-    void calculate_total_burst_time() {
-        total_burst_time = 0;
-        for (const auto& job : queue) {
-            total_burst_time += job.burst_time;
-        }
-    }
-};
-
-int main() {
-    Job job1(1, 0, 8, 2);
-    Job job2(2, 1, 4, 1);
-    Job job3(3, 2, 9, 3);
-    Job job4(4, 3, 5, 4);
-
-    Scheduler scheduler;
-    scheduler.add_job(job1);
-    scheduler.add_job(job2);
-    scheduler.add_job(job3);
-    scheduler.add_job(job4);
-
-    cout << "FCFS:" << endl;
-    scheduler.fcfs();
-    cout << "Average Waiting Time: " << scheduler.avg_waiting_time << endl;
-    cout << "Total Burst Time: " << scheduler.total_burst_time << endl;
-
-    cout << "\nSJF Preemptive:" << endl;
-    scheduler.sjf_preemptive();
-    cout << "Average Waiting Time: " << scheduler.avg_waiting_time << endl;
-    cout << "Total Burst Time: " << scheduler.total_burst_time << endl;
-
-    cout << "\nPriority Non-Preemptive:" << endl;
-    scheduler.priority_non_preemptive();
-    cout << "Average Waiting Time: " << scheduler.avg_waiting_time << endl;
-    cout << "Total Burst Time: " << scheduler.total_burst_time << endl;
-
-    cout << "\nRound Robin Preemptive:" << endl;
-    scheduler.round_robin_preemptive(3);
-    cout << "Average Waiting Time: " << scheduler.avg_waiting_time << endl;
-    cout << "Total Burst Time: " << scheduler.total_burst_time << endl;
-
+int main()
+{
+    pass1 obj;
+    obj.execute();
+    cout<<"\n=================OUTPUT=======================\n";
+    obj.output_show();
+    cout<<"\n=================Symbol=======================\n";
+        obj.symbol_show();
+    cout<<"\n=================Literal=======================\n";
+     obj.lit_show();
     return 0;
 }
