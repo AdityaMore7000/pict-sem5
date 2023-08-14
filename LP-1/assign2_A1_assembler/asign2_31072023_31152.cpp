@@ -1,12 +1,12 @@
-/*
-Author: AdityaMore7000
-*/
-
 #include <bits/stdc++.h>
+#include<iostream>
+#include<map>
+#include<vector>
 using namespace std;
 class pass1{
 public:
 void execute(){
+cout << "At line 1\n";
    map<string, pair<string, string>> opcode;
 
    opcode["STOP"] = {"IS", "00"};
@@ -91,12 +91,9 @@ void execute(){
            pooltab.push_back("#" + to_string(litindex + 1));
            for (; litindex < littab.size(); litindex++)
            {
-               fout << lc << " ";
-               fout << "( " << opcode["DC"].first << ", " << opcode["DC"].second << ") ";
                littab[litindex].second = lc;
                string literal = littab[litindex].first;
                string sublit = literal.substr(2, literal.length() - 3);
-               fout << "( C, " << sublit << ") ";
                fout << endl;
                lc++;
            }
@@ -209,13 +206,23 @@ void execute(){
            {
                if (operation == "DC")
                {
-                   word = word.substr(1, word.length() - 2);
+              string c=word.substr(0,word.length()-1);
+              if(c=="=")
+              {
+              word = word.substr(1, word.length());
+
+              }
+              else
+              {
+              word=word.substr(0,word.length());
+              }
                    fout << "(C, " << word << ") ";
                    // symtab[label].first = lc;
                }
                else if (operation == "DS")
                {
                    fout << "(C, " << word << ") ";
+                   lc=lc+stoi(word)-1;
                    // symtab[label].first = lc;
                    // lc += stoi(word) - 1;
                }
@@ -276,6 +283,8 @@ void execute(){
    }
 
    pout.close();
+
+   cout << "\nProgram Excuted!!" << endl;
 }
 void output_show(){
 ifstream fout;
