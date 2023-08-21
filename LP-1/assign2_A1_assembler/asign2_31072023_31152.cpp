@@ -3,7 +3,6 @@ using namespace std;
 
 int main()
 {
-    cout << "At line 1\n";
     map<string, pair<string, string>> opcode;
 
     opcode["STOP"] = {"IS", "00"};
@@ -125,7 +124,6 @@ int main()
             int plusminusindex = 0;
             for (int i = 0; i < word.length(); i++)
             {
-                /* code */
                 if (word[i] == '+' || word[i] == '-')
                 {
                     plusminusindex = i;
@@ -160,7 +158,6 @@ int main()
         {
             fout << "    ";
             fout << "(" << opcode[word].first << ", " << opcode[word].second << ") ";
-            // fout << endl;
             st >> word;
             int plusminusindex = 0;
             for (int i = 0; i < word.length(); i++)
@@ -208,13 +205,10 @@ int main()
                 {
                     word = word.substr(1, word.length() - 2);
                     fout << "(C, " << word << ") ";
-                    // symtab[label].first = lc; //
                 }
                 else if (operation == "DS")
                 {
                     fout << "(C, " << word << ") ";
-                    // symtab[label].first = lc; //
-                    // lc += stoi(word) - 1; //
                 }
                 else if (word[0] == '=')
                 {
@@ -242,7 +236,7 @@ int main()
     fout.close();
 
     ofstream sout;
-    sout.open("sym.txt"); // writing to symbol table file
+    sout.open("sym.txt");
 
     for (auto i : symtab)
     {
@@ -253,7 +247,7 @@ int main()
     sout.close();
 
     ofstream lout;
-    lout.open("lit.txt"); // writing to literal table file
+    lout.open("lit.txt");
 
     for (auto i : littab)
     {
@@ -264,7 +258,7 @@ int main()
     lout.close();
 
     ofstream pout;
-    pout.open("pool.txt"); // writing to pool table file
+    pout.open("pool.txt");
 
     for (auto i : pooltab)
     {
