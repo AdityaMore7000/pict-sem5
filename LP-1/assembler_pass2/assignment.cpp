@@ -2,6 +2,17 @@
 #include <fstream>
 #include <string.h>
 using namespace std;
+class SymTab{
+	public:
+	vector<vector<string>> table;
+};
+class Pass2{
+	public:
+	void generate();
+};
+void Pass2::generate(){
+	return;
+}
 int main()
 {
 	fstream lit, sym, input, output;
