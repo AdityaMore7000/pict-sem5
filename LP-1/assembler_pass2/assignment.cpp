@@ -5,6 +5,14 @@ using namespace std;
 class SymTab{
 	public:
 	vector<vector<string>> table;
+	void print(){
+		for(auto i:table){
+			for(auto j:i){
+				cout<<j<<' ';
+			}
+			cout<<'\n';
+		}
+	}
 };
 class Pass2{
 	public:
@@ -15,12 +23,24 @@ void Pass2::generate(){
 }
 int main()
 {
+	SymTab SYMTAB; 
 	fstream lit, sym, input, output;
-	lit.open("input.txt", ios::in);
-	string s = "";
-	while (getline(lit, s))
-	{
-		cout << s << '\n';
+	sym.open("sym.txt", ios::in);
+	string s;
+	while(getline(sym,s)){
+	int count = 0;
+	while(s[count] == ' ')
+	count++;
+	s = s.substr(count,s.size()-1);
+	vector<string> line;
+	stringstream ss(s);
+	string word;
+	while(ss>>word){
+		line.push_back(word);
+		// cout<<word<<'\n';
 	}
+	SYMTAB.table.push_back(line);
+	}
+	SYMTAB.print();
 	return 0;
 }
