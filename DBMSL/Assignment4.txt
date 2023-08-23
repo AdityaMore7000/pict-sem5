@@ -1,0 +1,17 @@
+create or replace procedure pay_fine(rollno int, date_sumbmit date)
+begin
+declare days int;
+declare fine int;
+declare issue_date date;
+declare return_date date;
+set return_date=date_submit;
+select dateOfIssue into issue_date from borrower where roll = rollno;
+set days=datediff(return_date,issue_date);
+if(days>15 and days<30) then
+set fine=days*5;
+insert into fine values(rollno,return_date, fine);
+else
+set fine=0;
+end if;
+end;
+/
