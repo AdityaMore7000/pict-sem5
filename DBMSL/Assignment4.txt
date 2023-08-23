@@ -1,17 +1,17 @@
-create or replace procedure pay_fine(rollno int, date_sumbmit date)
+create or replace procedure pay_fine(in rollno int,in date_sumbmit date)
 begin
 declare days int;
 declare fine int;
-declare issue_date date;
-declare return_date date;
-set return_date=date_submit;
-select dateOfIssue into issue_date from borrower where roll = rollno;
-set days=datediff(return_date,issue_date);
+declare issue date;
+select issue_date into issue from borrower where roll = rollno;
+set days:=datediff(date_sumbmit,issue);
 if(days>15 and days<30) then
-set fine=days*5;
-insert into fine values(rollno,return_date, fine);
+set fine:=days*5;
 else
-set fine=0;
+set fine:=0;
 end if;
+insert into fine values(rollno,date_sumbmit, fine);
 end;
 /
+QUERY:
+call pay_fine(53,'2023-09-09')/
