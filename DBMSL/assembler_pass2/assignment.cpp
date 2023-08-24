@@ -37,7 +37,6 @@ int main()
 	string word;
 	while(ss>>word){
 		line.push_back(word);
-		// cout<<word<<'\n';
 	}
 	SYMTAB.table.push_back(line);
 	}
