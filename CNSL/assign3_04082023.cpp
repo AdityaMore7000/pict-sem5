@@ -34,22 +34,22 @@ long countSetBits(long n) {
 }
 
 int main() {
-    cout << "Enter string: ";
-    string ch;
+    cout << "Enter value: ";
+    char ch;
     cin>>ch;
-    cout << "Final Hamming Array: ";
-    for(int i = 0;i<ch.length();i++){
-
-    int n = int(ch[i]);
+    cout<<"Entered value is: "<<ch<<'\n';
+    int n = int(ch);
+    cout<<"ASCII Code is: "<<n<<'\n';
     long number = convertToBinary(n);
 //    cin >> number;
 
+    cout << "Final Hamming Array: ";
     long m = countSetBits(number);
     long r = 1;
     while (pow(2, r) < m + r + 1) {
         r++;
     }
-
+    cout<<""<<r<<'\n';
     // Generate Parity Bits
     vector<long> parityArrayPos(r);
     for (long i = 0; i < r; i++) {
@@ -103,7 +103,6 @@ int main() {
     }
     for (const auto& val : hammingArray) {
         cout << val;
-    }
     }
     cout << endl;
     return 0;
