@@ -34,15 +34,15 @@ long countSetBits(long n) {
 }
 
 int main() {
-    std::cout << "Enter string: ";
+    cout << "Enter string: ";
     string ch;
     cin>>ch;
-    std::cout << "Final Hamming Array: ";
+    cout << "Final Hamming Array: ";
     for(int i = 0;i<ch.length();i++){
 
     int n = int(ch[i]);
     long number = convertToBinary(n);
-//    std::cin >> number;
+//    cin >> number;
 
     long m = countSetBits(number);
     long r = 1;
@@ -51,15 +51,15 @@ int main() {
     }
 
     // Generate Parity Bits
-    std::vector<long> parityArrayPos(r);
+    vector<long> parityArrayPos(r);
     for (long i = 0; i < r; i++) {
         parityArrayPos[i] = pow(2, i);
     }
 
-    std::vector<long> parityArray(r, -1);
+    vector<long> parityArray(r, -1);
 
     // Initial Hamming Array Calculation
-    std::vector<long> hammingArray(r + m);
+    vector<long> hammingArray(r + m);
     int j = 0;
     for (int i = 0; i < r + m; i++) {
         if (j < r && i == parityArrayPos[j] - 1) {
@@ -72,16 +72,16 @@ int main() {
         }
     }
 
-//    std::cout << "Initial Hamming Array: ";
+//    cout << "Initial Hamming Array: ";
 //    for (const auto& val : hammingArray) {
-//        std::cout << val << " ";
+//        cout << val << " ";
 //    }
-//    std::cout << std::endl;
+//    cout << endl;
     for (int i = 0; i < r; i++) {
-        std::string s1 = "";
+        string s1 = "";
         for (int k = parityArrayPos[i] - 1; k < r + m; k++) {
             if ((k + 1) & (1 << i)) {
-                s1 += std::to_string(hammingArray[k]);
+                s1 += to_string(hammingArray[k]);
             }
         }
 
@@ -102,9 +102,9 @@ int main() {
         }
     }
     for (const auto& val : hammingArray) {
-        std::cout << val;
+        cout << val;
     }
     }
-    std::cout << std::endl;
+    cout << endl;
     return 0;
 }
