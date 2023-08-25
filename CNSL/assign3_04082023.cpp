@@ -9,6 +9,24 @@
 #include <vector>
 #include <cmath>
 #include <string>
+#include <bits/stdc++.h>
+#include <sstream>
+using namespace std;
+long convertToBinary(long n){
+	long ans = 0;
+	while (n > 0) {
+	        ans*=10;
+	        ans += n % 2;
+	        n = n / 2;
+	    }
+	    string long_to_string = to_string(ans);
+	    string final ="";
+	    for(int i = long_to_string.size()-1;i>=0;i--){
+	    	final +=long_to_string[i];
+	    }
+	    ans = stoll(final);
+	return ans;
+}
 
 long countSetBits(long n) {
     if (n == 0) return 1;
@@ -21,9 +39,15 @@ long countSetBits(long n) {
 }
 
 int main() {
-    std::cout << "Enter Number: ";
-    long number;
-    std::cin >> number;
+    std::cout << "Enter string: ";
+    string ch;
+    cin>>ch;
+    std::cout << "Final Hamming Array: ";
+    for(int i = 0;i<ch.length();i++){
+
+    int n = int(ch[i]);
+    long number = convertToBinary(n);
+//    std::cin >> number;
 
     long m = countSetBits(number);
     long r = 1;
@@ -53,17 +77,15 @@ int main() {
         }
     }
 
-    std::cout << "Initial Hamming Array: ";
-    for (const auto& val : hammingArray) {
-        std::cout << val << " ";
-    }
-    std::cout << std::endl;
-
-    // Calculate R1, R2 ...
+//    std::cout << "Initial Hamming Array: ";
+//    for (const auto& val : hammingArray) {
+//        std::cout << val << " ";
+//    }
+//    std::cout << std::endl;
     for (int i = 0; i < r; i++) {
         std::string s1 = "";
         for (int k = parityArrayPos[i] - 1; k < r + m; k++) {
-            if ((k + 1) & (1 << i)) {  // Check if k+1 has bit i set
+            if ((k + 1) & (1 << i)) {
                 s1 += std::to_string(hammingArray[k]);
             }
         }
@@ -84,12 +106,10 @@ int main() {
             j++;
         }
     }
-
-    std::cout << "Final Hamming Array: ";
     for (const auto& val : hammingArray) {
-        std::cout << val << " ";
+        std::cout << val;
+    }
     }
     std::cout << std::endl;
-
     return 0;
 }
