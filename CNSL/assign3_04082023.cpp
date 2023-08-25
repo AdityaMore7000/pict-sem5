@@ -5,12 +5,7 @@
 // Copyright   : Your copyright notice
 // Description : Hello World in C++, Ansi-style
 //============================================================================
-#include <iostream>
-#include <vector>
-#include <cmath>
-#include <string>
 #include <bits/stdc++.h>
-#include <sstream>
 using namespace std;
 long convertToBinary(long n){
 	long ans = 0;
