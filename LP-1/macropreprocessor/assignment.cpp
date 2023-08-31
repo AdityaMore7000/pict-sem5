@@ -1,13 +1,35 @@
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 using namespace std;
-int main(){
-    vector<vector<string>> ip;
-    vector<string> line;
-    fstream fin;
-    fin.open("input.txt", ios::in);
+int main()
+{
+    vector<vector<string>> table;
+    vector<string> row;
+
+    fstream file;
+    file.open("ic.txt", ios::in);
+    if (!file)
+    {
+        cout << "Error in opening file..";
+        return 0;
+    }
     string word;
-    while(getline(fin, word))
-    cout<<word<<'\n';
-    cout<<"Program executed successfully...\n";
+    string temp;
+    while(getline(file, word))
+    {
+    int j = 0;
+    int i = 0;
+    for (; i < word.length(); i++)
+    {
+        if (word[i] == ' '||word[i]==',')
+        {
+            cout << word.substr(j, i) << ' ';
+            j = i + 1;
+        }
+    }
+    cout << word.substr(j, i) << ' ';
+    j = 0;
+    cout<<'\n';
+    }
+    cout << "Program executed successfully...\n";
     return 0;
 }
