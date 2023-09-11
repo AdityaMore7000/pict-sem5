@@ -4,7 +4,6 @@ int main()
 {
     vector<vector<string>> table;
     vector<string> row;
-
     fstream file;
     file.open("ic.txt", ios::in);
     if (!file)
@@ -13,22 +12,28 @@ int main()
         return 0;
     }
     string word;
-    string temp;
     while(getline(file, word))
     {
-    int j = 0;
-    int i = 0;
-    for (; i < word.length(); i++)
+   int k = 0;
+    int count = 0;
+    for(int i = 0;i<word.length();i++)
     {
-        if (word[i] == ' '||word[i]==',')
+        count++;
+        if(word[i]==' ')
         {
-            cout << word.substr(j, i) << ' ';
-            j = i + 1;
+            row.push_back(word.substr(k,count-1));
+            k = i+1;
+            count = 0;
         }
     }
-    cout << word.substr(j, i) << ' ';
-    j = 0;
-    cout<<'\n';
+    table.push_back(row);
+    row.clear();
+    }
+    for(auto i:table){
+        for(auto j:i){
+            cout << j << " ";
+        }
+        cout << endl;
     }
     cout << "Program executed successfully...\n";
     return 0;
