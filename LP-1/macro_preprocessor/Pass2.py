@@ -7,7 +7,7 @@ class Pass2:
         self.output = ""
         self.aptab = {}
         self.current_macro = 0
-        pass
+        # pass
 
     def readFiles(self):
         self.mnt = {
@@ -27,7 +27,7 @@ class Pass2:
             'V': 'DREG'
         }
 
-        pass
+        # pass
 
     def process(self):
         icFile = open(
