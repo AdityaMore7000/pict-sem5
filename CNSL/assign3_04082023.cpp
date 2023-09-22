@@ -7,103 +7,244 @@
 //============================================================================
 #include <bits/stdc++.h>
 using namespace std;
-long convertToBinary(long n){
-	long ans = 0;
-	while (n > 0) {
-	        ans*=10;
-	        ans += n % 2;
-	        n = n / 2;
-	    }
-	    string long_to_string = to_string(ans);
-	    string final ="";
-	    for(int i = long_to_string.size()-1;i>=0;i--){
-	    	final +=long_to_string[i];
-	    }
-	    ans = stoll(final);
-	return ans;
-}
 
-long countSetBits(long n) {
-    if (n == 0) return 1;
-    long count = 0;
-    while (n > 0) {
-        count += 1;
-        n /= 10;
+vector<int> decimalToBinary(int x) {
+    int p = x;
+    vector<int> output;
+    while (p != 0) {
+        int m = p / 2;
+        output.push_back(p % 2);
+        p = m;
     }
-    return count;
+    reverse(output.begin(), output.end());
+    return output;
 }
 
-int main() {
-    cout << "Enter value: ";
-    char ch;
-    cin>>ch;
-    cout<<"Entered value is: "<<ch<<'\n';
-    int n = int(ch);
-    cout<<"ASCII Code is: "<<n<<'\n';
-    long number = convertToBinary(n);
-//    cin >> number;
+int binaryToDecimal(const vector<int>& num) {
+    int output = 0;
+    for (int i = num.size() - 1; i >= 0; i--) {
+        output += pow(2, num.size() - 1 - i) * num[i];
+    }
+    return output;
+}
 
-    cout << "Final Hamming Array: ";
-    long m = countSetBits(number);
-    long r = 1;
+string listToStr(const vector<int>& l) {
+    string result;
+    for (int bit : l) {
+        result += to_string(bit);
+    }
+    return result;
+}
+
+int getEvenParity(const vector<int>& seq) {
+    return (accumulate(seq.begin(), seq.end(), 0) % 2 != 0) ? 1 : 0;
+}
+
+int getOddParity(const vector<int>& seq) {
+    return (accumulate(seq.begin(), seq.end(), 0) % 2 == 0) ? 1 : 0;
+}
+
+pair<vector<int>, int> encode(const vector<int>& message, const string& parity) {
+    int m = message.size();
+    auto parityFunc = (parity == "even") ? getEvenParity : getOddParity;
+    int r = 0;
     while (pow(2, r) < m + r + 1) {
         r++;
     }
-    cout<<""<<r<<'\n';
-    // Generate Parity Bits
-    vector<long> parityArrayPos(r);
-    for (long i = 0; i < r; i++) {
-        parityArrayPos[i] = pow(2, i);
-    }
+    vector<int> codeWord(m + r, 0);
+    vector<int> parityPositions;
 
-    vector<long> parityArray(r, -1);
-
-    // Initial Hamming Array Calculation
-    vector<long> hammingArray(r + m);
-    int j = 0;
-    for (int i = 0; i < r + m; i++) {
-        if (j < r && i == parityArrayPos[j] - 1) {
-            hammingArray[i] = parityArray[j];
-            j++;
-        } else {
-            long x = number % 10;
-            hammingArray[i] = x;
-            number = number / 10;
-        }
-    }
-
-//    cout << "Initial Hamming Array: ";
-//    for (const auto& val : hammingArray) {
-//        cout << val << " ";
-//    }
-//    cout << endl;
     for (int i = 0; i < r; i++) {
-        string s1 = "";
-        for (int k = parityArrayPos[i] - 1; k < r + m; k++) {
-            if ((k + 1) & (1 << i)) {
-                s1 += to_string(hammingArray[k]);
+        parityPositions.push_back(pow(2, i) - 1);
+    }
+
+    vector<int> dataPositions;
+    for (int i = 0; i < m + r; i++) {
+        if (find(parityPositions.begin(), parityPositions.end(), i) == parityPositions.end()) {
+            dataPositions.push_back(i);
+        }
+    }
+
+    for (size_t i = 0; i < message.size(); i++) {
+        codeWord[dataPositions[i]] = message[i];
+    }
+
+    for (size_t i = 0; i < parityPositions.size(); i++) {
+        vector<int> paritySeq;
+        bool take = true;
+        int takeCount = pow(2, i);
+
+        for (size_t j = parityPositions[i]; j < codeWord.size(); j++) {
+            if (take) {
+                paritySeq.push_back(codeWord[j]);
+                takeCount--;
+            } else {
+                takeCount++;
+            }
+
+            if (takeCount == 0) {
+                take = false;
+            } else if (takeCount == pow(2, i)) {
+                take = true;
             }
         }
 
-        int oneCount = 0;
-        for (int a = 0; a < s1.length(); a++) {
-            if (s1[a] == '1') {
-                oneCount++;
-            }
-        }
-        parityArray[i] = oneCount % 2;
+        codeWord[parityPositions[i]] = parityFunc(paritySeq);
     }
 
-    j = 0;
-    for (int i = 0; i < r + m; i++) {
-        if (j < r && i == parityArrayPos[j] - 1) {
-            hammingArray[i] = parityArray[j];
-            j++;
+    return make_pair(codeWord, r);
+}
+
+vector<int> decode(const vector<int>& codeWord, int r, const string& parity) {
+    auto parityFunc = (parity == "even") ? getEvenParity : getOddParity;
+    vector<int> parityPositions;
+
+    for (int i = 0; i < r; i++) {
+        parityPositions.push_back(pow(2, i) - 1);
+    }
+
+    vector<int> parityBits;
+
+    for (int i = 0; i < r; i++) {
+        vector<int> paritySeq;
+        bool take = true;
+        int takeCount = pow(2, i);
+
+        for (size_t j = parityPositions[i]; j < codeWord.size(); j++) {
+            if (take) {
+                paritySeq.push_back(codeWord[j]);
+                takeCount--;
+            } else {
+                takeCount++;
+            }
+
+            if (takeCount == 0) {
+                take = false;
+            } else if (takeCount == pow(2, i)) {
+                take = true;
+            }
         }
+
+        parityBits.push_back(parityFunc(paritySeq));
     }
-    for (const auto& val : hammingArray) {
-        cout << val;
+
+    return parityBits;
+}
+
+int main() {
+    string parity;
+    cout << "Which parity do you need? (even,odd) => ";
+    getline(cin, parity);
+    parity = (parity == "") ? "even" : "odd";
+
+    while (true) {
+        cout << "\nTransmitter" << endl;
+
+        string inputMessageStr;
+        cout << "\nEnter message: ";
+        getline(cin, inputMessageStr);
+        vector<char> inputChars(inputMessageStr.begin(), inputMessageStr.end());
+
+        vector<vector<int>> binReprLists;
+
+        cout << "Data on transmitter side is: " << endl;
+        for (char inputChar : inputChars) {
+            int ascii = static_cast<int>(inputChar);
+            vector<int> binRepr = decimalToBinary(ascii);
+            binReprLists.push_back(binRepr);
+            cout <<"\nInput Char: " <<inputChar << "\nAscii: " << ascii << "\nBinary: " << listToStr(binRepr) << endl;
+            cout<<endl;
+        }
+
+        vector<vector<int>> codeWordLists;
+        int numRBits = 0;
+
+        cout << "Code words on transmitter side:" << endl;
+        for (size_t i = 0; i < inputChars.size(); i++) {
+            vector<int> binRepr = binReprLists[i];
+            pair<vector<int>, int> encodedResult = encode(binRepr, parity);
+            codeWordLists.push_back(encodedResult.first);
+            numRBits = encodedResult.second;
+            cout << inputChars[i] << ": " << listToStr(encodedResult.first) << endl;
+            
+            // Display parity bits at transmitter side
+            cout << "Parity bits on transmitter side: ";
+            for (int j = 0; j < numRBits; j++) {
+                cout << encodedResult.first[pow(2, j) - 1] << " ";
+            }
+            cout << endl;
+        }
+
+        cout << "Number of redundant bits => r = " << numRBits << endl;
+        cout << "Number of bits in message => m = " << codeWordLists[0].size() - numRBits << endl;
+
+        cout << "\nTransmission Medium" << endl;
+
+        string error;
+        cout << "Do you wish to induce errors in the message? (no,yes) => ";
+        getline(cin, error);
+
+        if (error == "yes") {
+            for (vector<int>& codeWord : codeWordLists) {
+                int randomPosition = rand() % codeWord.size();
+                codeWord[randomPosition] = (codeWord[randomPosition] == 1) ? 0 : 1;
+                cout << "For code word " << listToStr(codeWord) << ", error induced at position=" << randomPosition << endl;
+            }
+        }
+
+        cout << "\nReceiver" << endl;
+
+        string decodedMessage = "";
+        for (size_t i = 0; i < codeWordLists.size(); i++) {
+            vector<int> codeWord = codeWordLists[i];
+            string codeWordStr = listToStr(codeWord);
+            vector<int> parityBits = decode(codeWord, numRBits, parity);
+
+            // Display received parity bits at receiver side
+            cout << "Received parity bits: ";
+            for (int j = 0; j < numRBits; j++) {
+                cout << parityBits[j] << " ";
+            }
+            cout << endl;
+
+            if (accumulate(parityBits.begin(), parityBits.end(), 0) == 0) {
+                vector<int> parityPositions;
+                for (int j = 0; j < numRBits; j++) {
+                    parityPositions.push_back(pow(2, j) - 1);
+                }
+                vector<int> charBinRepr;
+                for (size_t pos = 0; pos < codeWord.size(); pos++) {
+                    if (find(parityPositions.begin(), parityPositions.end(), static_cast<int>(pos)) == parityPositions.end()) {
+                        charBinRepr.push_back(codeWord[pos]);
+                    }
+                }
+                char decodedChar = static_cast<char>(binaryToDecimal(charBinRepr));
+                cout << "Code " << codeWordStr << " received without any error."
+                     << " Decoded character => " << decodedChar << endl;
+                decodedMessage += decodedChar;
+            } else {
+                int errorPosition = binaryToDecimal(vector<int>(parityBits.rbegin(), parityBits.rend())) - 1;
+                cout << "Code " << codeWordStr << " received with an error."
+                     << " Error is at index=" << errorPosition << endl;
+                codeWord[errorPosition] = (codeWord[errorPosition] == 1) ? 0 : 1;
+                vector<int> parityPositions;
+                for (int j = 0; j < numRBits; j++) {
+                    parityPositions.push_back(pow(2, j) - 1);
+                }
+                vector<int> charBinRepr;
+                for (size_t pos = 0; pos < codeWord.size(); pos++) {
+                    if (find(parityPositions.begin(), parityPositions.end(), static_cast<int>(pos)) == parityPositions.end()) {
+                        charBinRepr.push_back(codeWord[pos]);
+                    }
+                }
+                char decodedChar = static_cast<char>(binaryToDecimal(charBinRepr));
+                cout << "Corrected codeword => " << decodedChar << endl;
+                decodedMessage += decodedChar;
+            }
+        }
+
+        cout << "Message on receiver side => " << decodedMessage << endl;
     }
-    cout << endl;
+
     return 0;
 }
