@@ -2,8 +2,8 @@
 #include <cstdlib>
 #include <ctime>
 #include <cmath> 
-#include <unistd.h> // Include this for sleep function
-#include <algorithm> // Include this for sort function
+#include <unistd.h>
+#include <algorithm>
 
 using namespace std;
 
