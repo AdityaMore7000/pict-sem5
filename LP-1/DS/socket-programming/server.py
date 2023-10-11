@@ -1,15 +1,26 @@
+'''
+socket programming server
+'''
 import socket
 
-host = 'localhost'
-port = 12345
-
+HOST = 'localhost'
+PORT = 12345
+connected = True
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    s.bind((host, port))
+    s.bind((HOST, PORT))
     s.listen()
     conn, addr = s.accept()
     with conn:
         print('Connected by', addr)
-        data = conn.recv(1024)
-        print('Received:', data.decode())
-        message = 'Hello, client!'
-        conn.sendall(message.encode())
+        while True:
+            data = conn.recv(1024)
+            if data == "exit":
+                connected = False
+                break
+            print('Received:', data.decode())
+            MESSAGE = input()
+            if connected:
+                conn.send(MESSAGE.encode())
+            else:
+                conn.send("exit".encode())
+                conn.close()

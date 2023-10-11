@@ -1,3 +1,6 @@
+'''
+RPC for server
+'''
 from xmlrpc.server import SimpleXMLRPCServer
 
 def cube(n):
@@ -21,5 +24,8 @@ server.register_function(cube, 'cube_rpc')
 try:
     print("Server started and is listening on Port ", port)
     server.serve_forever()
-except:
-    print("Exited")
+except Exception as e:
+    print("Error:",e)
+finally:
+    print("Server Shutting down")
+    server.server_close()
