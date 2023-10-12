@@ -106,6 +106,7 @@ int main()
 
     if(!checkClass(IP)){
         cout<<"\nNetwork in different Class";
+        return 0;
 }
 
     createSubnet(IP,noSbnet);
