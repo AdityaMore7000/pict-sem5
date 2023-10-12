@@ -1,110 +1,122 @@
-#include <bits/stdc++.h>
-#include <cstdlib>
-
+#include<bits/stdc++.h>
+#include<cstdlib>
+// subnetting
 using namespace std;
 
-void checkClass(string IP)
-{
-    cout << "IP class : "
-         << " ";
-   
-    int firstOct = IP.find('.');
-    string fOct = IP.substr(0, firstOct);
 
-    if (stoi(fOct) >= 0 && stoi(fOct) <= 127)
+bool checkClass(string IP)
+{
+
+    cout<<"Your IP class : "<<" ";
+    int firstOct = IP.find('.');
+    string fOct = IP.substr(0,firstOct);
+
+    if(stoi(fOct)>=0 && stoi(fOct)<=127)
     {
-        cout << "Class A" << endl;
-        cout<<endl;
-        cout << "Default subnetMask: 255.0.0.0\n";
+        cout<<"Class A"<<endl;
+        cout<<"Default subnetMask: 255.0.0.0\n";
     }
-    else if (stoi(fOct) >= 128 && stoi(fOct) <= 191)
+    else if(stoi(fOct)>=128 && stoi(fOct)<=191)
     {
-        cout << "Class B" << endl;
-        cout<<endl;
-        cout << "Default subnetMask: 255.255.0.0\n";
+        cout<<"Class B"<<endl;
+        cout<<"Default subnetMask: 255.255.0.0\n";
     }
-    else if (stoi(fOct) >= 192 && stoi(fOct) <= 224)
+    else if(stoi(fOct)>=192 && stoi(fOct)<=224)
     {
-        cout << "Class C" << endl;
-        cout<<endl;
-        cout << "Default subnetMask: 255.255.255.0\n";
+        cout<<"Class C"<<endl;
+        cout<<"Default subnetMask: 255.255.255.0\n";
+        return true;
     }
-    else if (stoi(fOct) >= 225 && stoi(fOct) <= 239)
+    else if(stoi(fOct)>=225 && stoi(fOct)<=239)
     {
-        cout << "Class D" << endl;
-        cout<<endl;
-        cout << "Default subnetMask: not defined\n";
+        cout<<"Class D"<<endl;
+        cout<<"Default subnetMask: not defined\n";
     }
-    else if (stoi(fOct) >= 240 && stoi(fOct) <= 255)
+    else if(stoi(fOct)>=240 && stoi(fOct)<=255)
     {
-        cout << "Class E" << endl;
-        cout<<endl;
-        cout << "Default subnetMask: not defined\n";
+        cout<<"Class E"<<endl;
+        cout<<"Default subnetMask: not defined\n";
     }
-   
+    return false;
+}
+int countBits(int n)
+{
+int count=0;
+// While loop will run until we get n = 0
+while(n)
+{
+count++;
+// We are shifting n to right by 1
+// place as explained above
+n=n>>1;
+}
+return count;
 }
 
-void createSubnet(string IP, int n)
+void createSubnet(string IP,int n)
 {
-   
-    int bitToTransfer = ceil(log(n)/log(2.0));
-    cout<<"No. of bits to transfer : "<<bitToTransfer<<endl;
-    cout<<endl;
+    //only for class C
+    int bitToTransfer = ceil((double)(log(n))/log(2.0));
+
     int subnettedMask = 0;
 
-    for (int i = 7; i > 7 - bitToTransfer; i--)
+   
+    for(int i=7;i>7-bitToTransfer;i--)
     {
-        subnettedMask += pow(2, i);
+        subnettedMask+=pow(2,i);
     }
-    cout << "Subnet Mask: "
-         << "255.255.255." << to_string(subnettedMask);
+    cout<<"SubnettedMask: "<<"255.255.255."<<to_string(subnettedMask);
 
-    // show range of each subnet
-    int rangeToAdd = pow(2, 8 - bitToTransfer);
+    //show range of each subnet
+    int rangeToAdd = pow(2,8-bitToTransfer);
+    cout<<endl<<rangeToAdd<<endl;
     int varNum = 0;
-    cout<<endl;
-    cout << "\nRange : \n";
+    cout<<"\nYour range-->>\n";
     int thirdDot = IP.find_last_of('.');
+   
 
-    string threeOct = IP.substr(0, thirdDot);
-    int flag=0;
-    for (int i = 0; i < n - 1 || varNum+rangeToAdd-1<255; i++)
+    string threeOct = IP.substr(0,thirdDot);
+    int i=0;
+    for( i;i<n;i++)
     {
-        if(varNum>=(rangeToAdd*n) && !flag){
-            cout<<endl;
-            cout<<"Unused subnets -> "<<endl;
-            flag=!flag;
-        }
-        cout << threeOct << "." << varNum << " - ";
-        varNum += rangeToAdd - 1;
-        cout << threeOct << "." << varNum << endl;
+        cout<<threeOct<<"."<<varNum<<" - ";varNum+=rangeToAdd-1;
+        cout<<threeOct<<"."<<varNum<<endl;
         varNum++;
     }
-    cout << threeOct << "." << varNum << " - " << threeOct << "." << varNum + rangeToAdd - 1 << endl;
+    cout<<"Unused subnets:\n";
+    for(i;i<pow(2,bitToTransfer);i++)
+    {
+        cout<<threeOct<<"."<<varNum<<" - ";varNum+=rangeToAdd-1;
+        cout<<threeOct<<"."<<varNum<<endl;
+        varNum++;
+    }
+    // cout<<threeOct<<"."<<varNum<<" - "<<threeOct<<"."<<varNum+rangeToAdd-1<<endl;
 }
 
 int main()
 {
     int noSbnet;
     string IP;
-    cout << "No. of subnets ? : ";
-    cin >> noSbnet;
-    cout<<endl;
-    cout << "Enter the IP: ";
-    cin >> IP;
-   cout<<endl;
-    checkClass(IP);
-    cout<<endl;
-    createSubnet(IP, noSbnet);
-    cout << endl; 
-    cout << endl;
 
-    char cmd[20] = "ping ";
-    for (int i = 0; i < IP.length(); i++)
+    cout<<"Enter the IP: ";
+    cin>>IP;
+
+    cout<<"How many subnets to mask?"<<endl;
+    cin>>noSbnet;
+
+    if(!checkClass(IP)){
+        cout<<"\nNetwork in different Class";
+}
+
+    createSubnet(IP,noSbnet);
+    cout<<endl;
+    cout<<endl;
+   
+    char cmd[50]= "ping ";
+    for(int i=0;i<IP.length();i++)
     {
-        cmd[5 + i] = IP[i];
+        cmd[5+i] = IP[i];
     }
     system(cmd);
-    // 10.10.14.201
     return 0;
 }
