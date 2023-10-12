@@ -1,0 +1,56 @@
+> use demo
+switched to db demo
+> db
+demo
+> db.demo.insertOne({name:"Pranav",age:20,rollno:62})
+{
+	"acknowledged" : true,
+	"insertedId" : ObjectId("6527811dfbfd0a4024f69c2c")
+}
+> db.demo.insert({name:"Aditya",age:20,rollno:52},{name:"Manavi",age:20,rollno:49},{name:"Anurag",age:21,rollno:53})
+WriteResult({ "nInserted" : 1 })
+
+> db.demo.find()
+{ "_id" : ObjectId("6527811dfbfd0a4024f69c2c"), "name" : "Pranav", "age" : 20, "rollno" : 62 }
+{ "_id" : ObjectId("65278179fbfd0a4024f69c2d"), "name" : "Aditya", "age" : 20, "rollno" : 52 }
+
+> db.demo.insert({name:"Manavi",age:20,rollno:49},{name:"Anurag",age:21,rollno:53})
+WriteResult({ "nInserted" : 1 })
+
+> db.demo.insert({name:"Anurag",age:21,rollno:53})
+WriteResult({ "nInserted" : 1 })
+
+> db.demo.find()
+{ "_id" : ObjectId("6527811dfbfd0a4024f69c2c"), "name" : "Pranav", "age" : 20, "rollno" : 62 }
+{ "_id" : ObjectId("65278179fbfd0a4024f69c2d"), "name" : "Aditya", "age" : 20, "rollno" : 52 }
+{ "_id" : ObjectId("652781affbfd0a4024f69c2e"), "name" : "Manavi", "age" : 20, "rollno" : 49 }
+{ "_id" : ObjectId("652781c4fbfd0a4024f69c2f"), "name" : "Anurag", "age" : 21, "rollno" : 53 }
+> db.demo.update({rollno:49},{name:"Manavi",age:21,rollno:69});
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+
+> db.demo.find()
+{ "_id" : ObjectId("6527811dfbfd0a4024f69c2c"), "name" : "Pranav", "age" : 20, "rollno" : 62 }
+{ "_id" : ObjectId("65278179fbfd0a4024f69c2d"), "name" : "Aditya", "age" : 20, "rollno" : 52 }
+{ "_id" : ObjectId("652781affbfd0a4024f69c2e"), "name" : "Manavi", "age" : 21, "rollno" : 69 }
+{ "_id" : ObjectId("652781c4fbfd0a4024f69c2f"), "age" : 20, "name" : "Anurag", "rollno" : 53 }
+> db.demo.remove({name:"Anurag"});
+WriteResult({ "nRemoved" : 1 })
+
+> db.demo.find()
+{ "_id" : ObjectId("6527811dfbfd0a4024f69c2c"), "name" : "Pranav", "age" : 20, "rollno" : 62 }
+{ "_id" : ObjectId("65278179fbfd0a4024f69c2d"), "name" : "Aditya", "age" : 20, "rollno" : 52 }
+{ "_id" : ObjectId("652781affbfd0a4024f69c2e"), "name" : "Manavi", "age" : 21, "rollno" : 69 }
+
+> db.demo.find({rollno:{$lt:60}});
+{ "_id" : ObjectId("65278179fbfd0a4024f69c2d"), "name" : "Aditya", "age" : 20, "rollno" : 52 }
+
+> db.demo.save({name:"Mahajan",rollno:46,age:20});
+WriteResult({ "nInserted" : 1 })
+> db.demo.find({rollno:{$lt:60}});
+{ "_id" : ObjectId("65278179fbfd0a4024f69c2d"), "name" : "Aditya", "age" : 20, "rollno" : 52 }
+{ "_id" : ObjectId("652784abfbfd0a4024f69c30"), "name" : "Mahajan", "rollno" : 46, "age" : 20 }
+
+> db.demo.find({rollno:{$not:{$gt:50}}});
+{ "_id" : ObjectId("652784abfbfd0a4024f69c30"), "name" : "Mahajan", "rollno" : 46, "age" : 20 }
+
+
