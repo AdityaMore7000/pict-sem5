@@ -32,8 +32,10 @@ int pageFaultsFIFO(string pages, int frames) {
         } else {
             page_hits++;
         }
-        for (char ele: s){
-            cout << ele << ",";
+        queue<char> Q = q;
+        while (!Q.empty()) {
+            cout << Q.front() << " ";
+            Q.pop();
         }
         cout<<'\n';
     }
