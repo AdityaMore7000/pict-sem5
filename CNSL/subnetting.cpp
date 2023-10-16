@@ -106,14 +106,13 @@ int main()
 
     if(!checkClass(IP)){
         cout<<"\nNetwork in different Class";
-        return 0;
 }
 
     createSubnet(IP,noSbnet);
     cout<<endl;
     cout<<endl;
    
-    char cmd[50]= "ping ";
+    char cmd[70]= "ping                         -c 5";
     for(int i=0;i<IP.length();i++)
     {
         cmd[5+i] = IP[i];
