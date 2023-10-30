@@ -14,23 +14,23 @@ def url_to_ip(url):
     except socket.gaierror:
         return "Could not resolve the URL to an IP address."
 
-while True:
-    print("Choose an option:")
-    print("1. IP to URL")
-    print("2. URL to IP")
-    print("3. Exit")
-    
-    choice = input("Enter your choice (1/2/3): ")
-    
-    if choice == '1':
-        ip_address = input("Enter an IP address: ")
-        result = ip_to_url(ip_address)
-        print("URL for IP", ip_address, "is:", result)
-    elif choice == '2':
-        url = input("Enter a URL: ")
-        result = url_to_ip(url)
-        print("IP address for URL", url, "is:", result)
-    elif choice == '3':
-        break
-    else:
-        print("Invalid choice. Please enter 1, 2, or 3.")
+def main():
+    while True:
+        print("Enter 1 to convert IP to URL")
+        print("Enter 2 to convert URL to IP")
+        print("Enter 3 to exit")
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            ip_address = input("Enter IP address: ")
+            print("URL: ", ip_to_url(ip_address))
+        elif choice == '2':
+            url = input("Enter URL: ")
+            print("IP address: ", url_to_ip(url))
+        elif choice == '3':
+            break
+        else:
+            print("Invalid choice")
+
+if __name__ == '__main__':
+    main()
